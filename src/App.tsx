@@ -101,7 +101,7 @@ function CookingApp() {
       
       {/* User Info & Logout */}
       <div className="user-bar">
-        <span className="user-greeting">👋 Welcome, {user?.displayName}!</span>
+        <span className="user-greeting">👋 Welcome, {user?.displayName || user?.email?.split('@')[0] || 'Chef'}!</span>
         <button className="logout-btn" onClick={handleLogout}>
           🚪 Logout
         </button>
