@@ -70,6 +70,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Create user account
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
+      // Update display name FIRST before sending email
+      await updateProfile(userCredential.user, { displayName: name });
+      
+      // Reload user to get updated profile
+      await userCredential.user.reload();
+      
       // Send verification email
       try {
         await sendEmailVerification(userCredential.user, {
@@ -81,9 +87,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // We don't throw here because the account IS created. 
         // The user can resend the email later.
       }
-
-      // Update display name
-      await updateProfile(userCredential.user, { displayName: name });
 
       return {
         success: true,
@@ -151,9 +154,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loginWithGoogle = async (): Promise<{ success: boolean; error?: string }> => {
     try {
-      await signInWithPopup(auth, googleProvider);
+      console.log('🔵 Attempting Google Sign-In...');
+      const result = await signInWithPopup(auth, googleProvider);
+      console.log('✅ Google Sign-In successful:', result.user.email);
       return { success: true };
     } catch (error: any) {
+      console.error('❌ Google Sign-In error:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+      
       let errorMessage = 'Failed to sign in with Google';
 
       switch (error.code) {
@@ -166,6 +175,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         case 'auth/popup-blocked':
           errorMessage = 'Popup blocked. Please allow popups for this site';
           break;
+        case 'auth/unauthorized-domain':
+          errorMessage = 'This domain is not authorized. Please add it to Firebase Console → Authentication → Settings → Authorized domains';
+          break;
+        case 'auth/operation-not-allowed':
+          errorMessage = 'Google Sign-In is not enabled. Please enable it in Firebase Console';
+          break;
+        case 'auth/invalid-api-key':
+          errorMessage = 'Invalid Firebase API key. Please check your environment variables';
+          break;
+        default:
+          errorMessage = `Google Sign-In failed: ${error.message || error.code || 'Unknown error'}`;
       }
 
       return { success: false, error: errorMessage };
