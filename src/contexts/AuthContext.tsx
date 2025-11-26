@@ -84,7 +84,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Send verification email
       try {
         console.log('📧 Attempting to send verification email to:', email);
-        await sendEmailVerification(userCredential.user);
+        // Use Firebase's default domain which is always authorized
+        await sendEmailVerification(userCredential.user, {
+          url: 'https://ai-cooking-simulator.firebaseapp.com',
+          handleCodeInApp: false
+        });
         console.log('✅ Verification email sent successfully!');
       } catch (emailError: any) {
         console.error("❌ Failed to send initial verification email:", emailError);
@@ -231,7 +235,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       console.log('📧 Calling sendEmailVerification...');
-      await sendEmailVerification(auth.currentUser);
+      // Use Firebase's default domain which is always authorized
+      await sendEmailVerification(auth.currentUser, {
+        url: 'https://ai-cooking-simulator.firebaseapp.com',
+        handleCodeInApp: false
+      });
       console.log('✅ Verification email sent successfully!');
       return { success: true };
     } catch (error: any) {
