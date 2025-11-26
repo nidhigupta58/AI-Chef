@@ -78,10 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       // Send verification email
       try {
-        await sendEmailVerification(userCredential.user, {
-          url: window.location.origin + '/app',
-          handleCodeInApp: false
-        });
+        await sendEmailVerification(userCredential.user);
       } catch (emailError) {
         console.error("Failed to send initial verification email:", emailError);
         // We don't throw here because the account IS created. 
@@ -198,26 +195,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      console.log('Attempting to send verification email with URL...');
-      await sendEmailVerification(auth.currentUser, {
-        url: window.location.origin + '/app',
-        handleCodeInApp: false
-      });
-      console.log('Verification email sent successfully with URL.');
+      console.log('Sending verification email...');
+      await sendEmailVerification(auth.currentUser);
+      console.log('Verification email sent successfully.');
       return { success: true };
     } catch (error: any) {
-      console.error('Failed to send verification email with URL:', error);
-      
-      // Fallback: Try sending without custom URL (sometimes fixes 400 Bad Request if domain not whitelisted)
-      try {
-        console.log('Attempting fallback: sending verification email without URL...');
-        await sendEmailVerification(auth.currentUser);
-        console.log('Fallback verification email sent successfully.');
-        return { success: true };
-      } catch (retryError: any) {
-        console.error('Fallback verification failed:', retryError);
-        return { success: false, error: retryError.message || 'Failed to send verification email' };
-      }
+      console.error('Failed to send verification email:', error);
+      return { success: false, error: error.message || 'Failed to send verification email' };
     }
   };
 
