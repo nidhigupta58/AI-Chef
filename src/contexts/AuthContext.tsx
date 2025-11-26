@@ -84,9 +84,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Send verification email
       try {
         console.log('📧 Attempting to send verification email to:', email);
-        // Use Firebase's default domain which is always authorized
+        // Redirect to Vercel app after verification
+        const continueUrl = window.location.hostname === 'localhost' 
+          ? 'http://localhost:5173/login'
+          : 'https://ai-chef-blue.vercel.app/login';
+        
         await sendEmailVerification(userCredential.user, {
-          url: 'https://ai-cooking-simulator.firebaseapp.com',
+          url: continueUrl,
           handleCodeInApp: false
         });
         console.log('✅ Verification email sent successfully!');
@@ -235,9 +239,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       console.log('📧 Calling sendEmailVerification...');
-      // Use Firebase's default domain which is always authorized
+      // Redirect to Vercel app after verification
+      const continueUrl = window.location.hostname === 'localhost' 
+        ? 'http://localhost:5173/login'
+        : 'https://ai-chef-blue.vercel.app/login';
+      
       await sendEmailVerification(auth.currentUser, {
-        url: 'https://ai-cooking-simulator.firebaseapp.com',
+        url: continueUrl,
         handleCodeInApp: false
       });
       console.log('✅ Verification email sent successfully!');
