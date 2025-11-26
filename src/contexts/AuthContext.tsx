@@ -67,29 +67,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     name: string
   ): Promise<{ success: boolean; error?: string; needsVerification?: boolean }> => {
     try {
+      console.log('🔵 Starting signup process for:', email);
+      
       // Create user account
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      console.log('✅ User account created successfully:', userCredential.user.uid);
       
       // Update display name FIRST before sending email
       await updateProfile(userCredential.user, { displayName: name });
+      console.log('✅ Display name updated to:', name);
       
       // Reload user to get updated profile
       await userCredential.user.reload();
+      console.log('✅ User profile reloaded');
       
       // Send verification email
       try {
+        console.log('📧 Attempting to send verification email to:', email);
         await sendEmailVerification(userCredential.user);
-      } catch (emailError) {
-        console.error("Failed to send initial verification email:", emailError);
+        console.log('✅ Verification email sent successfully!');
+      } catch (emailError: any) {
+        console.error("❌ Failed to send initial verification email:", emailError);
+        console.error("Error code:", emailError.code);
+        console.error("Error message:", emailError.message);
         // We don't throw here because the account IS created. 
         // The user can resend the email later.
       }
 
+      console.log('✅ Signup process completed');
       return {
         success: true,
         needsVerification: true
       };
     } catch (error: any) {
+      console.error('❌ Signup failed:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+      
       let errorMessage = 'Failed to create account';
       
       switch (error.code) {
@@ -190,17 +204,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const resendVerificationEmail = async (): Promise<{ success: boolean; error?: string }> => {
+    console.log('🔵 Attempting to resend verification email...');
+    
     if (!auth.currentUser) {
+      console.error('❌ No user logged in');
       return { success: false, error: 'No user logged in' };
     }
 
+    console.log('📧 Current user:', auth.currentUser.email);
+    console.log('📧 Email verified status:', auth.currentUser.emailVerified);
+
     try {
-      console.log('Sending verification email...');
+      console.log('📧 Calling sendEmailVerification...');
       await sendEmailVerification(auth.currentUser);
-      console.log('Verification email sent successfully.');
+      console.log('✅ Verification email sent successfully!');
       return { success: true };
     } catch (error: any) {
-      console.error('Failed to send verification email:', error);
+      console.error('❌ Failed to send verification email:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
       return { success: false, error: error.message || 'Failed to send verification email' };
     }
   };
