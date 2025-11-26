@@ -130,10 +130,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     password: string
   ): Promise<{ success: boolean; error?: string; needsVerification?: boolean }> => {
     try {
+      console.log('🔵 Attempting login for:', email);
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log('✅ Sign in successful, checking verification status...');
+      
+      // CRITICAL: Reload user to get latest emailVerified status from server
+      // Without this, emailVerified might be cached and show as false even after verification
+      await userCredential.user.reload();
+      console.log('✅ User data reloaded from server');
+      console.log('📧 Email verified status:', userCredential.user.emailVerified);
       
       // Check if email is verified
       if (!userCredential.user.emailVerified) {
+        console.log('❌ Email not verified yet');
+        // Sign out the user since they're not verified
+        await signOut(auth);
         return {
           success: false,
           error: 'Please verify your email before logging in',
@@ -141,8 +152,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
       }
 
+      console.log('✅ Login successful!');
       return { success: true };
     } catch (error: any) {
+      console.error('❌ Login failed:', error);
+      console.error('Error code:', error.code);
+      
       let errorMessage = 'Failed to login';
 
       switch (error.code) {
