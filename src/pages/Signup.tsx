@@ -112,17 +112,45 @@ export default function Signup() {
               {success}
               {showVerificationNotice && (
                 <div style={{ marginTop: '1rem' }}>
+                  <div style={{ 
+                    background: 'rgba(255, 255, 255, 0.1)', 
+                    padding: '1rem', 
+                    borderRadius: '8px',
+                    marginBottom: '1rem',
+                    border: '1px solid rgba(255, 255, 255, 0.2)'
+                  }}>
+                    <p style={{ margin: '0 0 0.5rem 0', fontWeight: 'bold', fontSize: '1rem' }}>
+                      📬 Next Steps:
+                    </p>
+                    <ol style={{ margin: '0', paddingLeft: '1.5rem', fontSize: '0.9rem', lineHeight: '1.8' }}>
+                      <li>Check your email inbox (and spam folder)</li>
+                      <li>Click the verification link in the email</li>
+                      <li>After verifying, return here and click "Go to Login" below</li>
+                    </ol>
+                  </div>
+                  
                   <button
                     type="button"
                     className="resend-btn"
                     onClick={handleResendEmail}
                     disabled={resendingEmail}
+                    style={{ marginBottom: '0.75rem', width: '100%' }}
                   >
                     {resendingEmail ? 'Sending...' : '📧 Resend Verification Email'}
                   </button>
-                  <p style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}>
-                    After verifying, go to <Link to="/login" className="auth-link">Login</Link>
-                  </p>
+                  
+                  <Link 
+                    to="/login" 
+                    className="auth-submit-btn"
+                    style={{ 
+                      display: 'block', 
+                      textAlign: 'center',
+                      textDecoration: 'none',
+                      width: '100%'
+                    }}
+                  >
+                    ✅ Go to Login
+                  </Link>
                 </div>
               )}
             </div>

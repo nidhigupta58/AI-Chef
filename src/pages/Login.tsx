@@ -79,14 +79,26 @@ export default function Login() {
             <div className={`auth-error ${needsVerification ? 'verification-notice' : ''}`}>
               {error}
               {needsVerification && (
-                <button
-                  type="button"
-                  className="resend-btn"
-                  onClick={handleResendEmail}
-                  disabled={resendingEmail}
-                >
-                  {resendingEmail ? 'Sending...' : '📧 Resend Verification Email'}
-                </button>
+                <div style={{ marginTop: '1rem' }}>
+                  <p style={{ 
+                    fontSize: '0.9rem', 
+                    marginBottom: '0.75rem',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    padding: '0.75rem',
+                    borderRadius: '6px'
+                  }}>
+                    💡 <strong>Did you verify your email?</strong><br/>
+                    Check your inbox for a verification email, click the link, then try logging in again.
+                  </p>
+                  <button
+                    type="button"
+                    className="resend-btn"
+                    onClick={handleResendEmail}
+                    disabled={resendingEmail}
+                  >
+                    {resendingEmail ? 'Sending...' : '📧 Resend Verification Email'}
+                  </button>
+                </div>
               )}
             </div>
           )}
