@@ -146,10 +146,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Without this, emailVerified might be cached and show as false even after verification
       await userCredential.user.reload();
       console.log('✅ User data reloaded from server');
-      console.log('📧 Email verified status:', userCredential.user.emailVerified);
+      
+      // IMPORTANT: After reload(), get fresh user from auth.currentUser
+      // This ensures we have the absolute latest emailVerified status from Firebase
+      const freshUser = auth.currentUser;
+      
+      if (!freshUser) {
+        console.error('❌ No current user after reload');
+        await signOut(auth);
+        return {
+          success: false,
+          error: 'Authentication failed. Please try again.',
+          needsVerification: false
+        };
+      }
+      
+      console.log('📧 Email verified status:', freshUser.emailVerified);
+      console.log('👤 User UID:', freshUser.uid);
+      console.log('📧 User email:', freshUser.email);
       
       // Check if email is verified
-      if (!userCredential.user.emailVerified) {
+      if (!freshUser.emailVerified) {
         console.log('❌ Email not verified yet');
         // Sign out the user since they're not verified
         await signOut(auth);
@@ -160,7 +177,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
       }
 
-      console.log('✅ Login successful!');
+      console.log('✅ Login successful! Email is verified.');
       return { success: true };
     } catch (error: any) {
       console.error('❌ Login failed:', error);
@@ -169,7 +186,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       let errorMessage = 'Failed to login';
 
       switch (error.code) {
-        case 'auth/user-not  -found':
+        case 'auth/user-not-found':
         case 'auth/wrong-password':
         case 'auth/invalid-credential':
           errorMessage = 'Invalid email or password';
