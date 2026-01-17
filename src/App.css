@@ -225,6 +225,23 @@
   position: relative;
 }
 
+.ingredient-image-container {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ingredient-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.1);
+}
+
 .ingredient-emoji {
   font-size: 1.5rem;
   line-height: 1;
@@ -338,6 +355,29 @@
   align-items: center;
   gap: var(--space-md);
   animation: slideIn 0.3s ease;
+}
+
+.ingredient-image-container-small {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ingredient-image-small {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.ingredient-emoji-small {
+  font-size: 1.2rem;
+  line-height: 1;
 }
 
 @keyframes slideIn {
