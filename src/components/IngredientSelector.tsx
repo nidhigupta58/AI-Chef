@@ -1,61 +1,9 @@
+import { getIngredientImage, getIngredientEmoji } from '../utils/ingredientImages';
+
 interface IngredientSelectorProps {
   allIngredients: string[];
   selectedIngredients: string[];
   onToggle: (ingredient: string) => void;
-}
-
-// Get ingredient emoji based on type
-function getIngredientEmoji(ingredient: string): string {
-  const emojiMap: Record<string, string> = {
-    // Vegetables
-    tomato: '🍅',
-    lettuce: '🥬',
-    avocado: '🥑',
-    onion: '🧅',
-    vegetables: '🥦',
-    
-    // Dairy & Cheese
-    mozzarella: '🧀',
-    parmesan: '🧀',
-    milk: '🥛',
-    butter: '🧈',
-    
-    // Proteins
-    eggs: '🥚',
-    bacon: '🥓',
-    chicken: '🍗',
-    
-    // Carbs & Grains
-    pasta: '🍝',
-    bread: '🍞',
-    flour: '🌾',
-    rice: '🍚',
-    croutons: '🥖',
-    
-    // Baking & Sweets
-    sugar: '🧂',
-    cocoa: '🍫',
-    vanilla: '🌼',
-    cinnamon: '🌰',
-    
-    // Herbs & Spices
-    basil: '🌿',
-    cilantro: '🌿',
-    garlic: '🧄',
-    ginger: '🫚',
-    'black pepper': '🧂',
-    
-    // Citrus & Fruits
-    lemon: '🍋',
-    lime: '🍋',
-    
-    // Oils & Liquids
-    'olive oil': '🫒',
-    'soy sauce': '🥫',
-    'balsamic vinegar': '🍶'
-  };
-  
-  return emojiMap[ingredient.toLowerCase()] || '🍴';
 }
 
 export default function IngredientSelector({ 
@@ -75,7 +23,8 @@ export default function IngredientSelector({
       <div className="ingredients-grid">
         {allIngredients.map(ingredient => {
           const isSelected = selectedIngredients.includes(ingredient);
-          const emoji = getIngredientEmoji(ingredient);
+          const imageUrl = getIngredientImage(ingredient);
+          const fallbackEmoji = getIngredientEmoji(ingredient);
           return (
             <button
               key={ingredient}
@@ -83,7 +32,23 @@ export default function IngredientSelector({
               onClick={() => onToggle(ingredient)}
               title={`Click to ${isSelected ? 'remove' : 'add'} ${ingredient}`}
             >
-              <span className="ingredient-emoji">{emoji}</span>
+              <span className="ingredient-image-container">
+                <img 
+                  src={imageUrl} 
+                  alt={ingredient}
+                  className="ingredient-image"
+                  onError={(e) => {
+                    // Fallback to emoji if image fails to load
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    const emojiSpan = target.nextElementSibling as HTMLSpanElement;
+                    if (emojiSpan) {
+                      emojiSpan.style.display = 'inline';
+                    }
+                  }}
+                />
+                <span className="ingredient-emoji" style={{ display: 'none' }}>{fallbackEmoji}</span>
+              </span>
               {isSelected && <span className="checkmark">✓</span>}
               <span className="ingredient-name">{ingredient}</span>
             </button>
