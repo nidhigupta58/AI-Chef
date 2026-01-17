@@ -1,13 +1,5 @@
 // Utility functions for ingredient images
 
-// Alternative image source for ingredients not available in Spoonacular
-function getAlternativeImageUrl(ingredient: string): string {
-  // Use a food image service as fallback
-  const encodedIngredient = encodeURIComponent(ingredient);
-  // Using a placeholder service - can be replaced with actual food image API
-  return `https://source.unsplash.com/100x100/?${encodedIngredient},food`;
-}
-
 // Get ingredient image URL based on ingredient name
 export function getIngredientImage(ingredient: string): string {
   // Map ingredient names to their image identifiers for Spoonacular API
