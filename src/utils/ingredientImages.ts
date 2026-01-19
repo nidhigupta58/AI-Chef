@@ -83,8 +83,11 @@ export function getIngredientImage(ingredient: string): string {
     'vanilla': 'vanilla-extract',
     'cinnamon': 'cinnamon',
     'chocolate chips': 'chocolate-chips',
+    // Baking ingredients - Spoonacular may not have these, using alternative service
     'baking soda': 'baking-soda',
     'baking powder': 'baking-powder',
+    'baking-soda': 'baking-soda',
+    'baking-powder': 'baking-powder',
     
     // Herbs & Spices
     'basil': 'basil',
@@ -141,6 +144,32 @@ export function getIngredientImage(ingredient: string): string {
   };
   
   const normalizedIngredient = ingredient.toLowerCase().trim();
+  
+  // Ingredients that Spoonacular doesn't have - use TheMealDB with proper formatting
+  // Check this FIRST before trying Spoonacular
+  const mealDBMapping: Record<string, string> = {
+    'baking soda': 'Baking Soda',
+    'baking powder': 'Baking Powder',
+    'baking-soda': 'Baking Soda',
+    'baking-powder': 'Baking Powder',
+    'vegetable broth': 'Vegetable Stock',
+    'chicken broth': 'Chicken Stock',
+    'beef broth': 'Beef Stock',
+    'arborio rice': 'Arborio Rice',
+    'seaweed': 'Seaweed',
+    'dashi': 'Dashi Stock',
+    'beans': 'Beans',
+    'peppers': 'Bell Pepper',
+    'bell pepper': 'Bell Pepper',
+    'bell peppers': 'Bell Pepper',
+  };
+  
+  // If ingredient is in TheMealDB mapping, use it directly
+  if (mealDBMapping[normalizedIngredient]) {
+    return `https://www.themealdb.com/images/ingredients/${encodeURIComponent(mealDBMapping[normalizedIngredient])}.png`;
+  }
+  
+  // For other ingredients, use Spoonacular
   let imageId = ingredientImageMap[normalizedIngredient];
   
   // If not in map, try to generate a reasonable ID
