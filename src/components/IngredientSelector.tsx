@@ -25,6 +25,10 @@ export default function IngredientSelector({
           const isSelected = selectedIngredients.includes(ingredient);
           const imageUrl = getIngredientImage(ingredient);
           const fallbackEmoji = getIngredientEmoji(ingredient);
+          // Try alternative image source if primary fails
+          const normalizedIngredient = ingredient.toLowerCase().trim();
+          const alternativeUrl = `https://www.themealdb.com/images/ingredients/${encodeURIComponent(ingredient)}.png`;
+          
           return (
             <button
               key={ingredient}
@@ -38,8 +42,14 @@ export default function IngredientSelector({
                   alt={ingredient}
                   className="ingredient-image"
                   onError={(e) => {
-                    // Fallback to emoji if image fails to load
                     const target = e.target as HTMLImageElement;
+                    // Try alternative source first
+                    if (target.src !== alternativeUrl && !target.dataset.triedAlternative) {
+                      target.dataset.triedAlternative = 'true';
+                      target.src = alternativeUrl;
+                      return;
+                    }
+                    // If alternative also fails, fallback to emoji
                     target.style.display = 'none';
                     const emojiSpan = target.nextElementSibling as HTMLSpanElement;
                     if (emojiSpan) {
