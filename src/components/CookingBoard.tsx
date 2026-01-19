@@ -39,7 +39,7 @@ export default function CookingBoard({
               const imageUrl = getIngredientImage(ingredient);
               const fallbackEmoji = getIngredientEmoji(ingredient);
               return (
-                <div key={ingredient} className="selected-ingredient">
+              <div key={ingredient} className="selected-ingredient">
                   <span className="ingredient-image-container-small">
                     <img 
                       src={imageUrl} 
@@ -56,16 +56,16 @@ export default function CookingBoard({
                     />
                     <span className="ingredient-emoji-small" style={{ display: 'none' }}>{fallbackEmoji}</span>
                   </span>
-                  <span className="ingredient-text">{ingredient}</span>
-                  <button
-                    className="remove-btn"
-                    onClick={() => onRemove(ingredient)}
-                    aria-label={`Remove ${ingredient}`}
-                    title={`Remove ${ingredient}`}
-                  >
-                    ❌
-                  </button>
-                </div>
+                <span className="ingredient-text">{ingredient}</span>
+                <button
+                  className="remove-btn"
+                  onClick={() => onRemove(ingredient)}
+                  aria-label={`Remove ${ingredient}`}
+                  title={`Remove ${ingredient}`}
+                >
+                  ❌
+                </button>
+              </div>
               );
             })}
           </div>
