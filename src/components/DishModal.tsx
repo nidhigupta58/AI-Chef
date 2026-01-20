@@ -1,23 +1,10 @@
+import { useState } from 'react';
 import type { Recipe } from '../types';
+import { getRecipeImageUnsplash, getRecipeEmoji } from '../utils/recipeImages';
 
 interface DishModalProps {
   recipe: Recipe | null;
   onClose: () => void;
-}
-
-// Get dish emoji/visual for each recipe
-function getDishEmoji(recipeName: string): string {
-  const dishEmojis: Record<string, string> = {
-    'Margherita Pizza': '🍕',
-    'Caesar Salad': '🥗',
-    'Pasta Carbonara': '🍝',
-    'Chocolate Cake': '🍰',
-    'Guacamole': '🥑',
-    'Chicken Stir Fry': '🍜',
-    'Caprese Salad': '🥗',
-    'French Toast': '🍞'
-  };
-  return dishEmojis[recipeName] || '🍽️';
 }
 
 // Get cooking time estimate
@@ -31,17 +18,31 @@ function getCookingTime(difficulty: string): string {
 }
 
 export default function DishModal({ recipe, onClose }: DishModalProps) {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
   if (!recipe) return null;
 
-  const dishEmoji = getDishEmoji(recipe.name);
+  const recipeImage = getRecipeImageUnsplash(recipe.name);
+  const fallbackEmoji = getRecipeEmoji(recipe.name);
   const cookingTime = getCookingTime(recipe.difficulty);
+
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+    setImageError(false);
+  };
+
+  const handleImageError = () => {
+    setImageError(true);
+    setImageLoaded(true);
+  };
 
   return (
     <>
       <div className="modal-overlay" onClick={onClose} />
       <div className="dish-modal">
-        <button className="modal-close" onClick={onClose} aria-label="Close">
-          ✕
+        <button className="modal-close" onClick={onClose} aria-label="Close" title="Close">
+          ×
         </button>
 
         <div className="dish-celebration">
@@ -55,7 +56,25 @@ export default function DishModal({ recipe, onClose }: DishModalProps) {
         </div>
 
         <div className="dish-header">
-          <div className="dish-emoji-large">{dishEmoji}</div>
+          {/* Recipe Image Display */}
+          <div className="dish-image-container">
+            {!imageLoaded && !imageError && (
+              <div className="dish-image-skeleton">
+                <div className="skeleton-shimmer"></div>
+              </div>
+            )}
+            {imageError ? (
+              <div className="dish-emoji-large">{fallbackEmoji}</div>
+            ) : (
+              <img
+                src={recipeImage}
+                alt={recipe.name}
+                className={`dish-image-large ${imageLoaded ? 'loaded' : 'loading'}`}
+                onLoad={handleImageLoad}
+                onError={handleImageError}
+              />
+            )}
+          </div>
           <h2 className="dish-title">Perfect Match!</h2>
           <h3 className="dish-name">{recipe.name}</h3>
         </div>
@@ -121,3 +140,4 @@ export default function DishModal({ recipe, onClose }: DishModalProps) {
     </>
   );
 }
+
