@@ -26,7 +26,6 @@ export default function IngredientSelector({
           const imageUrl = getIngredientImage(ingredient);
           const fallbackEmoji = getIngredientEmoji(ingredient);
           // Try alternative image source if primary fails
-          const normalizedIngredient = ingredient.toLowerCase().trim();
           const alternativeUrl = `https://www.themealdb.com/images/ingredients/${encodeURIComponent(ingredient)}.png`;
           
           return (
