@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import type { RecipeMatch } from '../types';
+import { getRecipeImageUnsplash, getRecipeEmoji } from '../utils/recipeImages';
 
 interface ResultsPanelProps {
   recommendations: RecipeMatch[];
@@ -54,7 +56,11 @@ export default function ResultsPanel({ recommendations }: ResultsPanelProps) {
 }
 
 function RecipeCard({ match }: { match: RecipeMatch }) {
+  const [imageError, setImageError] = useState(false);
   const matchPercentage = Math.round(match.matchScore * 100);
+  
+  const recipeImage = getRecipeImageUnsplash(match.recipe.name);
+  const fallbackEmoji = getRecipeEmoji(match.recipe.name);
   
   const difficultyColors: Record<string, string> = {
     'Easy': 'difficulty-easy',
@@ -70,49 +76,68 @@ function RecipeCard({ match }: { match: RecipeMatch }) {
 
   return (
     <div className="recipe-card">
-      <div className="recipe-header">
-        <h4 className="recipe-name">
-          🍽️ {match.recipe.name}
-        </h4>
-        <span className={`difficulty-badge ${difficultyColors[match.recipe.difficulty]}`}>
-          <span className="difficulty-stars">{difficultyIcons[match.recipe.difficulty]}</span>
-          <span>{match.recipe.difficulty}</span>
-        </span>
-      </div>
-      
-      <div className="match-score">
-        <div className="score-bar-container">
-          <div 
-            className="score-bar-fill" 
-            style={{ width: `${matchPercentage}%` }}
-          />
+      <div className="recipe-card-content">
+        {/* Recipe Image Thumbnail */}
+        <div className="recipe-image-container">
+          {imageError ? (
+            <div className="recipe-image-fallback">{fallbackEmoji}</div>
+          ) : (
+            <img
+              src={recipeImage}
+              alt={match.recipe.name}
+              className="recipe-image"
+              onError={() => setImageError(true)}
+            />
+          )}
         </div>
-        <span className="score-text">{matchPercentage}% Match</span>
-      </div>
-
-      <div className="ingredients-info">
-        {match.have.length > 0 && (
-          <div className="ingredients-have">
-            <span className="label">✅ You have:</span>
-            <span className="items">{match.have.join(', ')}</span>
-          </div>
-        )}
         
-        {match.missing.length > 0 && (
-          <div className="ingredients-missing">
-            <span className="label">❌ Missing:</span>
-            <span className="items">{match.missing.join(', ')}</span>
+        <div className="recipe-info">
+          <div className="recipe-header">
+            <h4 className="recipe-name">
+              {match.recipe.name}
+            </h4>
+            <span className={`difficulty-badge ${difficultyColors[match.recipe.difficulty]}`}>
+              <span className="difficulty-stars">{difficultyIcons[match.recipe.difficulty]}</span>
+              <span>{match.recipe.difficulty}</span>
+            </span>
           </div>
-        )}
-      </div>
+          
+          <div className="match-score">
+            <div className="score-bar-container">
+              <div 
+                className="score-bar-fill" 
+                style={{ width: `${matchPercentage}%` }}
+              />
+            </div>
+            <span className="score-text">{matchPercentage}% Match</span>
+          </div>
 
-      {match.recipe.tags && match.recipe.tags.length > 0 && (
-        <div className="recipe-tags">
-          {match.recipe.tags.map(tag => (
-            <span key={tag} className="tag">{tag}</span>
-          ))}
+          <div className="ingredients-info">
+            {match.have.length > 0 && (
+              <div className="ingredients-have">
+                <span className="label">✅ You have:</span>
+                <span className="items">{match.have.join(', ')}</span>
+              </div>
+            )}
+            
+            {match.missing.length > 0 && (
+              <div className="ingredients-missing">
+                <span className="label">❌ Missing:</span>
+                <span className="items">{match.missing.join(', ')}</span>
+              </div>
+            )}
+          </div>
+
+          {match.recipe.tags && match.recipe.tags.length > 0 && (
+            <div className="recipe-tags">
+              {match.recipe.tags.map(tag => (
+                <span key={tag} className="tag">{tag}</span>
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
+
