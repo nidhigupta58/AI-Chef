@@ -148,9 +148,7 @@ export function getIngredientImage(ingredient: string): string {
   // Ingredients that Spoonacular doesn't have - use TheMealDB with proper formatting
   // Check this FIRST before trying Spoonacular
   const mealDBMapping: Record<string, string> = {
-    'baking soda': 'Baking Soda',
     'baking powder': 'Baking Powder',
-    'baking-soda': 'Baking Soda',
     'baking-powder': 'Baking Powder',
     'vegetable broth': 'Vegetable Stock',
     'chicken broth': 'Chicken Stock',
@@ -166,10 +164,13 @@ export function getIngredientImage(ingredient: string): string {
   
   // If ingredient is in TheMealDB mapping, use it directly
   if (mealDBMapping[normalizedIngredient]) {
-    return `https://www.themealdb.com/images/ingredients/${encodeURIComponent(mealDBMapping[normalizedIngredient])}.png`;
+    const mealDBName = mealDBMapping[normalizedIngredient];
+    // TheMealDB URL format - try with proper encoding
+    return `https://www.themealdb.com/images/ingredients/${encodeURIComponent(mealDBName)}.png`;
   }
   
   // For other ingredients, use Spoonacular
+  // Note: baking soda will try Spoonacular first, component will fallback to TheMealDB if needed
   let imageId = ingredientImageMap[normalizedIngredient];
   
   // If not in map, try to generate a reasonable ID
