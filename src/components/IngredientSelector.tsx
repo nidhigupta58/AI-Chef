@@ -26,7 +26,16 @@ export default function IngredientSelector({
           const imageUrl = getIngredientImage(ingredient);
           const fallbackEmoji = getIngredientEmoji(ingredient);
           // Try alternative image source if primary fails
-          const alternativeUrl = `https://www.themealdb.com/images/ingredients/${encodeURIComponent(ingredient)}.png`;
+          // Map ingredient names to TheMealDB format for fallback
+          const mealDBFallbackMap: Record<string, string> = {
+            'baking soda': 'Baking Soda',
+            'baking powder': 'Baking Powder',
+            'vegetable broth': 'Vegetable Stock',
+            'chicken broth': 'Chicken Stock',
+            'beef broth': 'Beef Stock',
+          };
+          const mealDBName = mealDBFallbackMap[ingredient.toLowerCase()] || ingredient;
+          const alternativeUrl = `https://www.themealdb.com/images/ingredients/${encodeURIComponent(mealDBName)}.png`;
           
           return (
             <button
