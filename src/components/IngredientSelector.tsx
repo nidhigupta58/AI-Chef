@@ -28,8 +28,10 @@ export default function IngredientSelector({
           // Try alternative image source if primary fails
           // Map ingredient names to TheMealDB format for fallback
           const mealDBFallbackMap: Record<string, string> = {
-            'baking soda': 'Baking Soda',
+            'arborio rice': 'Rice',
+            'baking soda': 'Baking Powder',
             'baking powder': 'Baking Powder',
+            'beans': 'Kidney Beans',
             'vegetable broth': 'Vegetable Stock',
             'chicken broth': 'Chicken Stock',
             'beef broth': 'Beef Stock',
