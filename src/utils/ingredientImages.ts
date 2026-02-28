@@ -144,10 +144,26 @@ export function getIngredientImage(ingredient: string): string {
   };
   
   const normalizedIngredient = ingredient.toLowerCase().trim();
+
+  // Use stable image overrides for ingredients with unreliable CDN coverage.
+  const realImageOverrides: Record<string, string> = {
+    'arborio rice': 'https://www.themealdb.com/images/ingredients/Rice.png',
+    'arborio-rice': 'https://www.themealdb.com/images/ingredients/Rice.png',
+    'baking soda': 'https://www.themealdb.com/images/ingredients/Baking%20Powder.png',
+    'baking-soda': 'https://www.themealdb.com/images/ingredients/Baking%20Powder.png',
+    'beans': 'https://www.themealdb.com/images/ingredients/Kidney%20Beans.png',
+    'bean': 'https://www.themealdb.com/images/ingredients/Kidney%20Beans.png',
+  };
+
+  if (realImageOverrides[normalizedIngredient]) {
+    return realImageOverrides[normalizedIngredient];
+  }
   
   // Ingredients that Spoonacular doesn't have - use TheMealDB with proper formatting
   // Check this FIRST before trying Spoonacular
   const mealDBMapping: Record<string, string> = {
+    'baking soda': 'Baking Powder',
+    'baking-soda': 'Baking Powder',
     'baking powder': 'Baking Powder',
     'baking-powder': 'Baking Powder',
     'vegetable broth': 'Vegetable Stock',
@@ -156,7 +172,8 @@ export function getIngredientImage(ingredient: string): string {
     'arborio rice': 'Arborio Rice',
     'seaweed': 'Seaweed',
     'dashi': 'Dashi Stock',
-    'beans': 'Beans',
+    'beans': 'Kidney Beans',
+    'bean': 'Kidney Beans',
     'peppers': 'Bell Pepper',
     'bell pepper': 'Bell Pepper',
     'bell peppers': 'Bell Pepper',
@@ -207,8 +224,11 @@ export function getIngredientEmoji(ingredient: string): string {
     'bread': '🍞',
     'flour': '🌾',
     'rice': '🍚',
+    'arborio rice': '🍚',
     'croutons': '🥖',
     'sugar': '🧂',
+    'baking soda': '🧂',
+    'beans': '🫘',
     'cocoa': '🍫',
     'vanilla': '🌼',
     'cinnamon': '🌰',
@@ -226,4 +246,3 @@ export function getIngredientEmoji(ingredient: string): string {
   
   return emojiMap[ingredient.toLowerCase()] || '🍴';
 }
-
